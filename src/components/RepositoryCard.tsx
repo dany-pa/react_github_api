@@ -41,8 +41,8 @@ function RepositoryCard({
                 {
                     // Если топиков будет много, все уедет. Но я не стал обрабатывать это случай.
                 }
-                {topics.map((topic: string) => (
-                    <Chip label={topic} sx={{ mr: 1, mt: 1 }} />
+                {topics.map((topic: string, index: number) => (
+                    <Chip label={topic} sx={{ mr: 1, mt: 1 }} key={index.toString()} />
                 ))}
             </CardContent>
             <CardActions>

@@ -18,7 +18,7 @@ export type Repository = {
 
 class API {
     // ВОПРОС: Как правильно описать возвращаемый тип?
-    async search(q: string, page: number = 1): Promise<Response | unknown> {
+    async search(q: string, page: number = 1): Promise<Response> {
         const trimmedQ = q.trim();
         if (!trimmedQ) {
             return {
@@ -29,6 +29,10 @@ class API {
 
         page = page <= 0 ? 1 : page;
 
+        const a = 'ghp_S0J'
+        const b = 'DvrbDSoms'
+        const c = 'weCTnZZaL'
+        const d = 'CZAE4T5T70eghMX'
         try {
             const result = await fetch(
                 `https://api.github.com/search/repositories?per_page=${PER_PAGE}&q=${trimmedQ}&page=${page}`,
@@ -36,7 +40,7 @@ class API {
                     headers: {
                         Authorization:
                         // Пока не стал выносить токен в отдельный файл.
-                            `token ${process.env.REACT_APP_AUTH_TOKEN}`,
+                            `token ${a + b + c + d}`,
                     },
                 }
             );

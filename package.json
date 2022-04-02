@@ -1,7 +1,7 @@
 {
     "name": "githubapi",
     "version": "0.1.0",
-    "homepage": "https://dany-pa.github.io/react_github_test/",
+    "homepage": "https://dany-pa.github.io/react_github_api/",
     "private": true,
     "dependencies": {
         "@emotion/react": "^11.8.2",

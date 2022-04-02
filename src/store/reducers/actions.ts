@@ -42,6 +42,14 @@ export type SetIsLoading = {
     };
 };
 
+export type Search = {
+    type: '*SEARCH';
+    payload: {
+        q: string;
+        page: number;
+    };
+};
+
 type Action =
     | SetQ
     | SetTotalCount

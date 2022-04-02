@@ -1,20 +1,22 @@
 import { call, put, takeEvery, debounce, select } from 'redux-saga/effects';
 import api, { Response } from '../../api';
+import { ActionsDispatcher, Dispatcher } from '../actions';
 import { State } from '../reducers';
-// import Action from '../reducers/actions';
+import {SetQ, Search, SetPage, SetErrorMessage} from '../reducers/actions';
+const actions = new ActionsDispatcher(put as Dispatcher<void>);
 
-// ВОПРОС: Не смог победить any
-function* setQ(action: any) {
+
+function* setQ(action: SetQ) {
     yield put({
         type: 'SET_TOTAL_COUNT',
         payload: { totalCount: 0 },
     });
     yield put({ type: 'SET_PAGE', payload: { page: 1 } });
-    yield put({ type: 'SET_Q', payload: action.payload });
+    yield actions.setQ(action.payload.q);
     yield put({ type: '*SEARCH', payload: action.payload });
 }
 
-function* search(action: any) {
+function* search(action: Search) {
     // ВОПРОС: Как лучше делать очистку каких-то значений при старте поиска?
 
     yield put({
@@ -47,9 +49,7 @@ function* search(action: any) {
     } catch (error) {
         yield put({
             type: 'SET_ERROR_MESSAGE',
-            // ВОПРОС: Не смог победить unknown в типе error
-            // @ts-ignore
-            payload: { errorMessage: error.message },
+            payload: { errorMessage: (error as Error).message },
         });
     } finally {
         yield put({
@@ -59,7 +59,7 @@ function* search(action: any) {
     }
 }
 
-function* setPage(action: any) {
+function* setPage(action: SetPage) {
     yield put({ type: 'SET_PAGE', payload: action.payload });
 
     const q: string = yield select((state: State): string => state.q);
@@ -72,17 +72,16 @@ function* setPage(action: any) {
     });
 }
 
-function* setError(action: any) {
+function* setErrorMessage(action: SetErrorMessage) {
     yield put({
-        type: 'SET_ERROR',
+        type: 'SET_ERROR_MESSAGE',
         payload: action.payload,
     });
 }
 
-// ВОПРОС: Надо делать одну сагу, или несколько?
 export default function* sagaSetQ() {
     yield takeEvery('*SET_Q', setQ);
     yield debounce(300, '*SEARCH', search);
     yield takeEvery('*SET_PAGE', setPage);
-    yield takeEvery('*SET_ERROR', setError);
+    yield takeEvery('*SET_ERROR', setErrorMessage);
 }
