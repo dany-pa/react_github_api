@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { State } from './store/reducers';
 import { Repository } from './api';
@@ -7,12 +7,11 @@ import CardSkeleton from './components/CardSkeleton';
 import BasePagination from './components/BasePagination';
 import {
     Container,
-    Pagination,
     Card,
-    Box,
     TextField,
     Typography,
 } from '@mui/material';
+import RepositoryCardList from './components/RepositoryCardsList';
 
 function App() {
     const dispatch = useDispatch();
@@ -44,23 +43,6 @@ function App() {
         },
         [dispatch]
     );
-
-    const getCards = () => {
-        if (isLoading) return <CardSkeleton />;
-
-        return repositoriesCards.map((card: Repository, index: number) => (
-            //Почему-то остоянно вылезает ошибка Each child in a list should have a unique "key" prop.
-            <RepositoryCard
-                name={card.name}
-                html_url={card.html_url}
-                avatar_url={card.owner.avatar_url}
-                stargazers_count={card.stargazers_count}
-                description={card.description}
-                topics={card.topics}
-                key={index.toString()}
-            />
-        ));
-    };
 
     const getSadMessage = () => {
         if (page == 100)
@@ -125,7 +107,7 @@ function App() {
                 {getSadMessage()}
             </Card>
 
-            <Box>{getCards()}</Box>
+            <RepositoryCardList isLoading={isLoading} repositoriesCards={repositoriesCards}  />
 
             {
                 errorMessage ?
