@@ -5,12 +5,7 @@ import { Repository } from './api';
 import RepositoryCard from './components/RepositoryCard';
 import CardSkeleton from './components/CardSkeleton';
 import BasePagination from './components/BasePagination';
-import {
-    Container,
-    Card,
-    TextField,
-    Typography,
-} from '@mui/material';
+import { Container, Card, TextField, Typography } from '@mui/material';
 import RepositoryCardList from './components/RepositoryCardsList';
 
 function App() {
@@ -104,16 +99,21 @@ function App() {
                     onPageChange={onPageChange}
                 />
 
-                {getSadMessage()}
+                {page == 100 ? (
+                    <Typography color="red">
+                        Гитхаб больше не разрешает :(
+                    </Typography>
+                ) : null}
             </Card>
 
-            <RepositoryCardList isLoading={isLoading} repositoriesCards={repositoriesCards}  />
+            <RepositoryCardList
+                isLoading={isLoading}
+                repositoriesCards={repositoriesCards}
+            />
 
-            {
-                errorMessage ?
+            {errorMessage ? (
                 <Typography color="red">Ошибка: {errorMessage}</Typography>
-                : null
-            }
+            ) : null}
         </Container>
     );
 }
