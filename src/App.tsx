@@ -4,6 +4,7 @@ import { State } from './store/reducers';
 import { Repository } from './api';
 import RepositoryCard from './components/RepositoryCard';
 import CardSkeleton from './components/CardSkeleton';
+import BasePagination from './components/BasePagination';
 import {
     Container,
     Pagination,
@@ -43,23 +44,6 @@ function App() {
         },
         [dispatch]
     );
-
-    // ВОПРОС: Надо это выносить в отдельный компонент? Или подход с функцией тоже нормальный?
-    const getPagination = () => {
-        if (totalCount > 0) {
-            return (
-                <Pagination
-                    count={pageCount}
-                    color="primary"
-                    onChange={onPageChange}
-                    page={page}
-                />
-            );
-        }
-
-        // ВОПРОС: Нужно всегда null возвращать, или можно обойтись и undefined?
-        return null;
-    };
 
     const getErrorMessage = () => {
         if (errorMessage) {
@@ -101,7 +85,7 @@ function App() {
     const SAD_MESSAGE_HEIGHT = 20;
     const CARDS_PADDING = 20;
     // const [topHeight, setTopHeight] = useState(TOP_HEIGHT);
-    const topHeight = 250
+    const topHeight = 250;
 
     // useEffect(() => {
     //     const paginationHeight = pageCount > 0 ? PAGINATION_HEIGHT : 0;
@@ -140,7 +124,11 @@ function App() {
                 />
                 <h3>Найдено репозиториев: {totalCount}</h3>
 
-                {getPagination()}
+                <BasePagination
+                    pageCount={pageCount}
+                    page={page}
+                    onPageChange={onPageChange}
+                />
 
                 {getSadMessage()}
             </Card>
