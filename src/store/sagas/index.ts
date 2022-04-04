@@ -1,85 +1,58 @@
 import { call, put, takeEvery, debounce, select } from 'redux-saga/effects';
 import api, { Response } from '../../api';
+import { MAX_PAGES, PER_PAGE } from '../../const';
 import { ActionsDispatcher, Dispatcher } from '../actions';
 import { State } from '../reducers';
-import {SetQ, Search, SetPage, SetErrorMessage} from '../reducers/actions';
+import { SetQ, Search, SetPage, SetErrorMessage } from '../reducers/actions';
+// ВОПРОС: Что если нам нужен putResolve, или put(channel, action)? Просто создаем еще один экземпляр класса?
 const actions = new ActionsDispatcher(put as Dispatcher<void>);
 
-
 function* setQ(action: SetQ) {
-    yield put({
-        type: 'SET_TOTAL_COUNT',
-        payload: { totalCount: 0 },
-    });
-    yield put({ type: 'SET_PAGE', payload: { page: 1 } });
+    yield actions.setTotalCount(0);
+    yield actions.setPage(1);
     yield actions.setQ(action.payload.q);
-    yield put({ type: '*SEARCH', payload: action.payload });
+    yield actions.search(action.payload.q, 0);
 }
 
 function* search(action: Search) {
     // ВОПРОС: Как лучше делать очистку каких-то значений при старте поиска?
 
-    yield put({
-        type: 'SET_REPOSITORIES_CARDS',
-        payload: { repositoriesCards: [] },
-    });
-
-    // ВОПРОС: Может есть какой-то лучший способ делать индикатор загрузки?
-    yield put({
-        type: 'SET_IS_LOADING',
-        payload: { isLoading: true },
-    });
+    yield actions.setRepositoriesCards([]);
+    yield actions.setIsLoading(true);
 
     try {
-        const result: Response = yield call(
-            api.search,
+        const result: Response = yield api.search(
             action.payload.q,
             action.payload.page
         );
 
-        yield put({
-            type: 'SET_TOTAL_COUNT',
-            payload: { totalCount: result.total_count },
-        });
+        yield actions.setTotalCount(result.total_count);
 
-        yield put({
-            type: 'SET_REPOSITORIES_CARDS',
-            payload: { repositoriesCards: result.items },
-        });
+        const totalCount = result.total_count;
+        const pages = Math.ceil(totalCount / PER_PAGE);
+        const pageCount = pages > MAX_PAGES ? MAX_PAGES : pages;
+        yield actions.setPageCount(pageCount);
+
+        yield actions.setRepositoriesCards(result.items);
     } catch (error) {
-        yield put({
-            type: 'SET_ERROR_MESSAGE',
-            payload: { errorMessage: (error as Error).message },
-        });
+        yield actions.setErrorMessage((error as Error).message);
     } finally {
-        yield put({
-            type: 'SET_IS_LOADING',
-            payload: { isLoading: false },
-        });
+        yield actions.setIsLoading(false);
     }
 }
 
 function* setPage(action: SetPage) {
-    yield put({ type: 'SET_PAGE', payload: action.payload });
+    yield actions.setPage(action.payload.page);
 
     const q: string = yield select((state: State): string => state.q);
-    yield put({
-        type: '*SEARCH',
-        payload: {
-            q,
-            page: action.payload.page,
-        },
-    });
+    yield actions.search(q, action.payload.page);
 }
 
 function* setErrorMessage(action: SetErrorMessage) {
-    yield put({
-        type: 'SET_ERROR_MESSAGE',
-        payload: action.payload,
-    });
+    yield actions.setErrorMessage(action.payload.errorMessage);
 }
 
-export default function* sagaSetQ() {
+export default function* defaultSaga() {
     yield takeEvery('*SET_Q', setQ);
     yield debounce(300, '*SEARCH', search);
     yield takeEvery('*SET_PAGE', setPage);
