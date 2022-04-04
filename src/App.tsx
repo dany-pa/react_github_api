@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { State } from './store/reducers';
 import { Repository } from './api';
-import { MAX_PAGES, PER_PAGE } from './const';
 import RepositoryCard from './components/RepositoryCard';
 import CardSkeleton from './components/CardSkeleton';
 import {
@@ -15,7 +14,6 @@ import {
 } from '@mui/material';
 
 function App() {
-    // Вопрос: Как быть с именем dispatch если мне надо использовать и useDispatch() и useReducer со своим dispatch?
     const dispatch = useDispatch();
 
     const q = useSelector((state: State): string => state.q);
@@ -36,12 +34,9 @@ function App() {
         (state: State): Repository[] => state.repositoriesCards
     );
 
-    const [pageCount, setPageCount] = useState(0);
-    useEffect(() => {
-        const pages = Math.ceil(totalCount / PER_PAGE);
-        setPageCount(pages > MAX_PAGES ? MAX_PAGES : pages);
-    }, [totalCount]);
+    const pageCount = useSelector((state: State): number => state.pageCount);
 
+    // Вопрос: Типы со звездочкой тоже надо типизировать в store/actions?
     const onPageChange = useCallback(
         (e, page) => {
             dispatch({ type: '*SET_PAGE', payload: { page } });
@@ -92,7 +87,12 @@ function App() {
     };
 
     const getSadMessage = () => {
-        if (page == 100) return <Typography color="red">Гитхаб больше не разрешает :(</Typography>;
+        if (page == 100)
+            return (
+                <Typography color="red">
+                    Гитхаб больше не разрешает :(
+                </Typography>
+            );
         return null;
     };
 
@@ -100,14 +100,15 @@ function App() {
     const PAGINATION_HEIGHT = 50;
     const SAD_MESSAGE_HEIGHT = 20;
     const CARDS_PADDING = 20;
-    const [topHeight, setTopHeight] = useState(TOP_HEIGHT);
+    // const [topHeight, setTopHeight] = useState(TOP_HEIGHT);
+    const topHeight = 250
 
-    useEffect(() => {
-        const paginationHeight = pageCount > 0 ? PAGINATION_HEIGHT : 0;
-        const sadMessageHeight = page == 100 ? SAD_MESSAGE_HEIGHT : 0;
+    // useEffect(() => {
+    //     const paginationHeight = pageCount > 0 ? PAGINATION_HEIGHT : 0;
+    //     const sadMessageHeight = page == 100 ? SAD_MESSAGE_HEIGHT : 0;
 
-        setTopHeight(TOP_HEIGHT + paginationHeight + sadMessageHeight);
-    }, [pageCount, page]);
+    //     setTopHeight(TOP_HEIGHT + paginationHeight + sadMessageHeight);
+    // }, [pageCount, page]);
 
     return (
         <Container

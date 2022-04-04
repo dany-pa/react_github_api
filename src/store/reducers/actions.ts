@@ -1,5 +1,5 @@
 import { Repository } from '../../api';
-
+// Доступные экшны
 export type SetQ = {
     type: 'SET_Q';
     payload: {
@@ -50,12 +50,21 @@ export type Search = {
     };
 };
 
+export type SetPageCount = {
+    type: 'SET_PAGE_COUNT';
+    payload: {
+        pageCount: number;
+    };
+};
+
 type Action =
     | SetQ
     | SetTotalCount
     | SetRepositoriesCards
     | SetPage
     | SetErrorMessage
-    | SetIsLoading;
+    | SetIsLoading
+    | Search
+    | SetPageCount
 
 export default Action;
