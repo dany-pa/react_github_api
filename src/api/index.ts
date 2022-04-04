@@ -1,5 +1,5 @@
-import {PER_PAGE} from '../const'
-// ВОПРОС: Типы стоит оставлять прямо в этом файле, или лучше их вынести в отдельный файл?
+import { call } from 'redux-saga/effects';
+import { PER_PAGE } from '../const';
 export type Response = {
     total_count: number;
     items: Repository[];
@@ -17,8 +17,7 @@ export type Repository = {
 };
 
 class API {
-    // ВОПРОС: Как правильно описать возвращаемый тип?
-    async search(q: string, page: number = 1): Promise<Response> {
+    async #search(q: string, page: number = 1): Promise<Response> {
         const trimmedQ = q.trim();
         if (!trimmedQ) {
             return {
@@ -29,17 +28,17 @@ class API {
 
         page = page <= 0 ? 1 : page;
 
-        const a = 'ghp_S0J'
-        const b = 'DvrbDSoms'
-        const c = 'weCTnZZaL'
-        const d = 'CZAE4T5T70eghMX'
+        const a = 'ghp_S0J';
+        const b = 'DvrbDSoms';
+        const c = 'weCTnZZaL';
+        const d = 'CZAE4T5T70eghMX';
         try {
             const result = await fetch(
                 `https://api.github.com/search/repositories?per_page=${PER_PAGE}&q=${trimmedQ}&page=${page}`,
                 {
                     headers: {
                         Authorization:
-                        // Пока не стал выносить токен в отдельный файл.
+                            // Пока не стал выносить токен в отдельный файл.
                             `token ${a + b + c + d}`,
                     },
                 }
@@ -52,6 +51,10 @@ class API {
         } catch (error) {
             throw error;
         }
+    }
+
+    search(q: string, page: number): any {
+        return call(this.#search, q, page);
     }
 }
 
