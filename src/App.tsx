@@ -45,14 +45,6 @@ function App() {
         [dispatch]
     );
 
-    const getErrorMessage = () => {
-        if (errorMessage) {
-            return <Typography color="red">Ошибка: {errorMessage}</Typography>;
-        }
-
-        return null;
-    };
-
     const getCards = () => {
         if (isLoading) return <CardSkeleton />;
 
@@ -135,7 +127,11 @@ function App() {
 
             <Box>{getCards()}</Box>
 
-            {getErrorMessage()}
+            {
+                errorMessage ?
+                <Typography color="red">Ошибка: {errorMessage}</Typography>
+                : null
+            }
         </Container>
     );
 }
