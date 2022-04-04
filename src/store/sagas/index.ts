@@ -1,4 +1,4 @@
-import { call, put, takeEvery, debounce, select } from 'redux-saga/effects';
+import { put, takeEvery, debounce, select } from 'redux-saga/effects';
 import api, { Response } from '../../api';
 import { MAX_PAGES, PER_PAGE } from '../../const';
 import { ActionsDispatcher, Dispatcher } from '../actions';

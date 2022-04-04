@@ -2,8 +2,6 @@ import { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { State } from './store/reducers';
 import { Repository } from './api';
-import RepositoryCard from './components/RepositoryCard';
-import CardSkeleton from './components/CardSkeleton';
 import BasePagination from './components/BasePagination';
 import { Container, Card, TextField, Typography } from '@mui/material';
 import RepositoryCardList from './components/RepositoryCardsList';
@@ -39,16 +37,6 @@ function App() {
         [dispatch]
     );
 
-    const getSadMessage = () => {
-        if (page == 100)
-            return (
-                <Typography color="red">
-                    Гитхаб больше не разрешает :(
-                </Typography>
-            );
-        return null;
-    };
-
     const TOP_HEIGHT = 120;
     const PAGINATION_HEIGHT = 50;
     const SAD_MESSAGE_HEIGHT = 20;
@@ -68,10 +56,6 @@ function App() {
             sx={{ my: 4, paddingTop: `${topHeight + CARDS_PADDING}px` }}
             maxWidth="sm"
         >
-            {
-                // ВОПРОС: Нужно <Card> оборачивать в <Box> ?
-                // Со стилями я не стал заморачиваться и просто записал их везде прямо в компоненте. Какой подход стоит использовать в реальных проектах?
-            }
             <Card
                 sx={{
                     my: 2,
